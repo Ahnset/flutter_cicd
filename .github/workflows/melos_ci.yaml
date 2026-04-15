@@ -41,10 +41,10 @@ jobs:
       # 🧪 Test only packages changed since the base branch or previous commit
       - name: Run Tests on Changed Packages
         run: |
-          melos exec --diff=${{ github.base_ref || 'HEAD~1' }} -- flutter test
+          melos exec --since=${{ github.base_ref || 'HEAD~1' }} -- flutter test
 
       # 🔍 Analyze only packages changed
       - name: Analyze Changed Packages
         run: |
-          melos exec --diff=${{ github.base_ref || 'HEAD~1' }} -- flutter analyze
+          melos exec --since=${{ github.base_ref || 'HEAD~1' }} -- flutter analyze
 

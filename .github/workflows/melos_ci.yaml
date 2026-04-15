@@ -36,7 +36,9 @@ jobs:
         run: dart pub global activate melos 2.9.0 # Pinning version for stability
 
       - name: Bootstrap Workspace
-        run: melos bootstrap
+        run: |
+          melos bootstrap
+          melos exec -- flutter pub get
 
       # 🧪 Test only packages changed since the base branch or previous commit
       - name: Run Tests on Changed Packages

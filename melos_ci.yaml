@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [develop, main]
+
+jobs:
+  flutter-ci:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Required for --since to work properly
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true # Caches the Flutter SDK itself
+
+      # ⚡️ High-performance Pub Cache
+      - name: Cache Pub dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+          # The key changes only when a pubspec.lock in ANY package changes
+          key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pub-
+
+      - name: Install Melos
+        run: dart pub global activate melos 2.9.0 # Pinning version for stability
+
+      - name: Bootstrap Workspace
+        run: melos bootstrap
+
+      # 🧪 Test only packages changed since the base branch or previous commit
+      - name: Run Tests on Changed Packages
+        run: |
+          melos exec --since=${{ github.base_ref || 'HEAD~1' }} -- flutter test
+
+      # 🔍 Analyze only packages changed
+      - name: Analyze Changed Packages
+        run: |
+          melos exec --since=${{ github.base_ref || 'HEAD~1' }} -- flutter analyze
+

@@ -1,0 +1,11 @@
+name: my_monorepo
+
+packages:
+  - apps/**
+  - packages/**
+
+scripts:
+  analyze:
+    exec: flutter analyze .
+  test:
+    exec: flutter test
